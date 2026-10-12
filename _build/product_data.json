@@ -1,0 +1,1 @@
+{"_help": "Optional. Keys like \"white-button-down/1\" (outfit slug / product number). Fields: price (e.g. \"$39\"), checked (e.g. \"Oct 2026\"), image (e.g. \"img/products/shirt.jpg\"), url (exact affiliate link), cap (budget limit in dollars)."}

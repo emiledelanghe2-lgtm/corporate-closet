@@ -12,18 +12,22 @@
 
 <meta name="theme-color" content="#F4EFE8">
 <link rel="icon" href="../../img/logo.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/data.js" defer></script>
+<script src="../../assets/site.js" defer></script>
 </head>
-<body>
+<body data-root="../../">
 <div class="wrap">
   <header class="top">
     <a class="brand" href="../../index.html"><img src="../../img/logo.jpg" alt="" width="56" height="56"><b>The Corporate Closet</b></a>
-    <nav class="nav" aria-label="Main">
-      <a class="link" href="../../shop/index.html">Shop outfits</a>
-      <a class="link" href="https://www.pinterest.com/pin/632966922682397447/" target="_blank" rel="noopener">Checklist</a>
-      <a class="btn solid small" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Follow on Pinterest</a>
-    </nav>
+    <nav class="menu" aria-label="Main"><a href="../../shop/index.html" aria-current="page">Shop outfits</a><a href="../../seasons/index.html">Seasons</a><a href="../../quiz/index.html">Style quiz</a><a href="../../capsule-builder/index.html">Build a capsule</a><a href="../../about/index.html">About</a></nav>
+    <div class="actions">
+      <a class="saved" href="../../saved/index.html" aria-label="Saved outfits"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg><span data-saved-count>0</span></a>
+      <a class="btn solid small follow" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener"><span>Follow<span class="long"> on Pinterest</span></span></a>
+    </div>
   </header>
 
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a> / <a href="../../shop/index.html">Shop outfits</a> / Office Outfit Ideas</nav>
@@ -32,11 +36,13 @@
     <p class="lead">Complete looks for the office, from crisp white shirts to polished layers.</p>
     <div class="pills"><a class="pill" href="../../shop/office/index.html" aria-current="page">Office Outfit Ideas</a><a class="pill" href="../../shop/casual/index.html">Business Casual</a><a class="pill" href="../../shop/essentials/index.html">Workwear Essentials</a><a class="pill" href="../../shop/trends/index.html">Trends &amp; Styling</a></div>
   </section>
-  <section class="sec" style="margin-top:28px"><div class="grid"><a class="card" href="../../outfits/white-button-down/index.html"><div class="ph"><img src="../../img/632966922682404047.jpg" alt="4 ways to wear a white button down" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">4 ways to wear a white button down</span></a><a class="card" href="../../outfits/leather-blazer/index.html"><div class="ph"><img src="../../img/632966922682372722.jpg" alt="Leather blazer for the office" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Leather blazer for the office</span></a><a class="card" href="../../outfits/leather-trench-knit-dress/index.html"><div class="ph"><img src="../../img/632966922682359265.jpg" alt="Leather trench over a knit dress" loading="lazy" width="736" height="920"><b class="tag">Shop</b></div><span class="t">Leather trench over a knit dress</span></a><a class="card" href="../../outfits/cream-shirt-white-trousers/index.html"><div class="ph"><img src="../../img/632966922682359264.jpg" alt="Cream shirt with white trousers" loading="lazy" width="736" height="1074"><b class="tag">Shop</b></div><span class="t">Cream shirt with white trousers</span></a></div></section>
+  <section class="sec" style="margin-top:28px"><div class="grid"><div class="card" data-colors="cream brown" data-style="classic"><a class="cl" href="../../outfits/white-button-down/index.html"><div class="ph"><img src="../../img/632966922682404047.jpg" alt="4 ways to wear a white button down" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">4 ways to wear a white button down</span></a><button class="heart" type="button" data-slug="white-button-down" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="brown cream" data-style="edge"><a class="cl" href="../../outfits/leather-blazer/index.html"><div class="ph"><img src="../../img/632966922682372722.jpg" alt="Leather blazer for the office" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Leather blazer for the office</span></a><button class="heart" type="button" data-slug="leather-blazer" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="brown cream" data-style="edge"><a class="cl" href="../../outfits/leather-trench-knit-dress/index.html"><div class="ph"><img src="../../img/632966922682359265.jpg" alt="Leather trench over a knit dress" loading="lazy" width="736" height="920"><b class="tag">Shop</b></div><span class="t">Leather trench over a knit dress</span></a><button class="heart" type="button" data-slug="leather-trench-knit-dress" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="cream" data-style="classic"><a class="cl" href="../../outfits/cream-shirt-white-trousers/index.html"><div class="ph"><img src="../../img/632966922682359264.jpg" alt="Cream shirt with white trousers" loading="lazy" width="736" height="1074"><b class="tag">Shop</b></div><span class="t">Cream shirt with white trousers</span></a><button class="heart" type="button" data-slug="cream-shirt-white-trousers" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div></div></section>
   <footer>
+    <nav aria-label="Footer"><a href="../../shop/index.html">Shop outfits</a><a href="../../seasons/index.html">Seasons</a><a href="../../quiz/index.html">Style quiz</a><a href="../../capsule-builder/index.html">Build a capsule</a><a href="../../about/index.html">About</a><a href="../../checklist/index.html">Checklist</a><a href="../../saved/index.html">Saved outfits</a><a href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Pinterest</a></nav>
     <p>As an Amazon Associate I earn from qualifying purchases. Links on this site are affiliate links.</p>
     <p>&copy; The Corporate Closet</p>
   </footer>
 </div>
+
 </body>
 </html>

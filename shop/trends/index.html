@@ -12,18 +12,22 @@
 
 <meta name="theme-color" content="#F4EFE8">
 <link rel="icon" href="../../img/logo.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/data.js" defer></script>
+<script src="../../assets/site.js" defer></script>
 </head>
-<body>
+<body data-root="../../">
 <div class="wrap">
   <header class="top">
     <a class="brand" href="../../index.html"><img src="../../img/logo.jpg" alt="" width="56" height="56"><b>The Corporate Closet</b></a>
-    <nav class="nav" aria-label="Main">
-      <a class="link" href="../../shop/index.html">Shop outfits</a>
-      <a class="link" href="https://www.pinterest.com/pin/632966922682397447/" target="_blank" rel="noopener">Checklist</a>
-      <a class="btn solid small" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Follow on Pinterest</a>
-    </nav>
+    <nav class="menu" aria-label="Main"><a href="../../shop/index.html" aria-current="page">Shop outfits</a><a href="../../seasons/index.html">Seasons</a><a href="../../quiz/index.html">Style quiz</a><a href="../../capsule-builder/index.html">Build a capsule</a><a href="../../about/index.html">About</a></nav>
+    <div class="actions">
+      <a class="saved" href="../../saved/index.html" aria-label="Saved outfits"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg><span data-saved-count>0</span></a>
+      <a class="btn solid small follow" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener"><span>Follow<span class="long"> on Pinterest</span></span></a>
+    </div>
   </header>
 
   <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a> / <a href="../../shop/index.html">Shop outfits</a> / Trends &amp; Styling</nav>
@@ -32,11 +36,13 @@
     <p class="lead">Trend-led pieces and small styling details that lift a work outfit.</p>
     <div class="pills"><a class="pill" href="../../shop/office/index.html">Office Outfit Ideas</a><a class="pill" href="../../shop/casual/index.html">Business Casual</a><a class="pill" href="../../shop/essentials/index.html">Workwear Essentials</a><a class="pill" href="../../shop/trends/index.html" aria-current="page">Trends &amp; Styling</a></div>
   </section>
-  <section class="sec" style="margin-top:28px"><div class="grid"><a class="card" href="../../outfits/office-siren/index.html"><div class="ph"><img src="../../img/632966922682389324.jpg" alt="Office siren: knit and pencil skirt" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Office siren: knit and pencil skirt</span></a><a class="card" href="../../outfits/coquette-bow-blouse/index.html"><div class="ph"><img src="../../img/632966922682361200.jpg" alt="Coquette silk bow blouse" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Coquette silk bow blouse</span></a><a class="card" href="../../outfits/silk-scarf-styling/index.html"><div class="ph"><img src="../../img/632966922682355003.jpg" alt="Silk scarf, styled for work" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Silk scarf, styled for work</span></a><a class="card" href="../../outfits/cream-vest-mini-skirt/index.html"><div class="ph"><img src="../../img/632966922682352189.jpg" alt="Cream vest with a mini skirt" loading="lazy" width="675" height="1200"><b class="tag">Shop</b></div><span class="t">Cream vest with a mini skirt</span></a><a class="card" href="../../outfits/lace-skirt-brown-knit/index.html"><div class="ph"><img src="../../img/632966922682395447.jpg" alt="Lace skirt with a brown knit" loading="lazy" width="736" height="1455"><b class="tag">Shop</b></div><span class="t">Lace skirt with a brown knit</span></a></div></section>
+  <section class="sec" style="margin-top:28px"><div class="grid"><div class="card" data-colors="grey" data-style="edge"><a class="cl" href="../../outfits/office-siren/index.html"><div class="ph"><img src="../../img/632966922682389324.jpg" alt="Office siren: knit and pencil skirt" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Office siren: knit and pencil skirt</span></a><button class="heart" type="button" data-slug="office-siren" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="cream brown" data-style="soft"><a class="cl" href="../../outfits/coquette-bow-blouse/index.html"><div class="ph"><img src="../../img/632966922682361200.jpg" alt="Coquette silk bow blouse" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Coquette silk bow blouse</span></a><button class="heart" type="button" data-slug="coquette-bow-blouse" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="grey" data-style="soft"><a class="cl" href="../../outfits/silk-scarf-styling/index.html"><div class="ph"><img src="../../img/632966922682355003.jpg" alt="Silk scarf, styled for work" loading="lazy" width="736" height="1104"><b class="tag">Shop</b></div><span class="t">Silk scarf, styled for work</span></a><button class="heart" type="button" data-slug="silk-scarf-styling" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="cream brown" data-style="soft"><a class="cl" href="../../outfits/cream-vest-mini-skirt/index.html"><div class="ph"><img src="../../img/632966922682352189.jpg" alt="Cream vest with a mini skirt" loading="lazy" width="675" height="1200"><b class="tag">Shop</b></div><span class="t">Cream vest with a mini skirt</span></a><button class="heart" type="button" data-slug="cream-vest-mini-skirt" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div><div class="card" data-colors="brown" data-style="soft"><a class="cl" href="../../outfits/lace-skirt-brown-knit/index.html"><div class="ph"><img src="../../img/632966922682395447.jpg" alt="Lace skirt with a brown knit" loading="lazy" width="736" height="1455"><b class="tag">Shop</b></div><span class="t">Lace skirt with a brown knit</span></a><button class="heart" type="button" data-slug="lace-skirt-brown-knit" aria-pressed="false" aria-label="Save this outfit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg></button></div></div></section>
   <footer>
+    <nav aria-label="Footer"><a href="../../shop/index.html">Shop outfits</a><a href="../../seasons/index.html">Seasons</a><a href="../../quiz/index.html">Style quiz</a><a href="../../capsule-builder/index.html">Build a capsule</a><a href="../../about/index.html">About</a><a href="../../checklist/index.html">Checklist</a><a href="../../saved/index.html">Saved outfits</a><a href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Pinterest</a></nav>
     <p>As an Amazon Associate I earn from qualifying purchases. Links on this site are affiliate links.</p>
     <p>&copy; The Corporate Closet</p>
   </footer>
 </div>
+
 </body>
 </html>

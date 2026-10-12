@@ -12,24 +12,30 @@
 
 <meta name="theme-color" content="#F4EFE8">
 <link rel="icon" href="img/logo.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
+<script src="assets/data.js" defer></script>
+<script src="assets/site.js" defer></script>
 </head>
-<body>
+<body data-root="">
 <div class="wrap">
   <header class="top">
     <a class="brand" href="index.html"><img src="img/logo.jpg" alt="" width="56" height="56"><b>The Corporate Closet</b></a>
-    <nav class="nav" aria-label="Main">
-      <a class="link" href="shop/index.html">Shop outfits</a>
-      <a class="link" href="https://www.pinterest.com/pin/632966922682397447/" target="_blank" rel="noopener">Checklist</a>
-      <a class="btn solid small" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Follow on Pinterest</a>
-    </nav>
+    <nav class="menu" aria-label="Main"><a href="shop/index.html">Shop outfits</a><a href="seasons/index.html">Seasons</a><a href="quiz/index.html">Style quiz</a><a href="capsule-builder/index.html">Build a capsule</a><a href="about/index.html">About</a></nav>
+    <div class="actions">
+      <a class="saved" href="saved/index.html" aria-label="Saved outfits"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg><span data-saved-count>0</span></a>
+      <a class="btn solid small follow" href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener"><span>Follow<span class="long"> on Pinterest</span></span></a>
+    </div>
   </header>
-<section class="pagehead" style="padding:40px 0"><h1>Page not found</h1><p class="lead">That page does not exist. Try the shop instead.</p><p style="margin-top:20px"><a class="btn solid" href="/shop/">Shop outfits</a></p></section>
+<section class="pagehead" style="padding:28px 0"><h1>Page not found</h1><p class="lead">That page does not exist. Try the shop instead.</p><p style="margin-top:20px"><a class="btn solid" href="/shop/">Shop outfits</a></p></section>
   <footer>
+    <nav aria-label="Footer"><a href="shop/index.html">Shop outfits</a><a href="seasons/index.html">Seasons</a><a href="quiz/index.html">Style quiz</a><a href="capsule-builder/index.html">Build a capsule</a><a href="about/index.html">About</a><a href="checklist/index.html">Checklist</a><a href="saved/index.html">Saved outfits</a><a href="https://www.pinterest.com/thecorporateclosetstyle/" target="_blank" rel="noopener">Pinterest</a></nav>
     <p>As an Amazon Associate I earn from qualifying purchases. Links on this site are affiliate links.</p>
     <p>&copy; The Corporate Closet</p>
   </footer>
 </div>
+
 </body>
 </html>
