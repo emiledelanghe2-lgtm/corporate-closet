@@ -1,0 +1,3 @@
+{
+  "_help": "Optional. Map 'outfit-slug/N' (N = product number on that outfit, starting at 1) to an exact affiliate URL. Example: \"white-button-down/1\": \"https://amzn.to/xxxx\". Anything not listed falls back to an Amazon search link using amazon_tag from config.json."
+}
