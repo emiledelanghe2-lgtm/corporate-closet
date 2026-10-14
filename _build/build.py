@@ -556,7 +556,9 @@ JS = r"""
       var best = CC.styleOrder[0], max = -1;
       CC.styleOrder.forEach(function (k) { if ((score[k] || 0) > max) { max = score[k] || 0; best = k; } });
       var st = CC.styles[best];
-      var list = CC.outfits.filter(function (o) { return o.style === best; }).sort(function (x, y) { return (y.shop ? 1 : 0) - (x.shop ? 1 : 0); }).slice(0, 4);
+      var byShop = function (x, y) { return (y.shop ? 1 : 0) - (x.shop ? 1 : 0); };
+      var list = CC.outfits.filter(function (o) { return o.style === best; }).sort(byShop)
+        .concat(CC.outfits.filter(function (o) { return o.style !== best; }).sort(byShop)).slice(0, 4);
       history.replaceState(null, '', '#' + picks.join('.'));
       quiz.innerHTML = '<div class="result"><p class="eyebrow">Your outfit</p><h2>' + esc(st.name) + '</h2><p class="lead">' + esc(st.desc) + '</p>' +
         '<div class="recipe"><div class="rp head">' + pal(p) + '<b>' + esc(p.label) + '</b></div>' +
@@ -705,7 +707,7 @@ def build():
 
     # ---------- home ----------
     r = ""
-    m = [BY_SLUG["fall-capsule-brown-tones"], BY_SLUG["leather-blazer"], BY_SLUG["white-button-down"]]
+    m = [BY_SLUG["white-long-sleeve-top"], BY_SLUG["leather-blazer"], BY_SLUG["white-button-down"]]
     mosaic = "".join(
         f'<a href="{r}outfits/{o["slug"]}/index.html"><img src="{r}img/{o["pin"]}.jpg" alt="{esc(o["title"])}" width="736" height="1104">'
         + (f'<span class="cap">{esc(o["title"])}</span>' if i == 0 else "") + "</a>" for i, o in enumerate(m))
@@ -780,7 +782,7 @@ def build():
   </section>"""
     write("index.html", page(0, f"{SITE} | Workwear & Office Outfits",
                               "Office outfit ideas and workwear essentials for the corporate girlie. Shop every look.",
-                              home, "index.html", "632966922682369892"))
+                              home, "index.html", "632966922682368948"))
 
     # ---------- shop ----------
     r = "../"

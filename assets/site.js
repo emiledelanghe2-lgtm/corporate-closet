@@ -106,7 +106,9 @@
       var best = CC.styleOrder[0], max = -1;
       CC.styleOrder.forEach(function (k) { if ((score[k] || 0) > max) { max = score[k] || 0; best = k; } });
       var st = CC.styles[best];
-      var list = CC.outfits.filter(function (o) { return o.style === best; }).sort(function (x, y) { return (y.shop ? 1 : 0) - (x.shop ? 1 : 0); }).slice(0, 4);
+      var byShop = function (x, y) { return (y.shop ? 1 : 0) - (x.shop ? 1 : 0); };
+      var list = CC.outfits.filter(function (o) { return o.style === best; }).sort(byShop)
+        .concat(CC.outfits.filter(function (o) { return o.style !== best; }).sort(byShop)).slice(0, 4);
       history.replaceState(null, '', '#' + picks.join('.'));
       quiz.innerHTML = '<div class="result"><p class="eyebrow">Your outfit</p><h2>' + esc(st.name) + '</h2><p class="lead">' + esc(st.desc) + '</p>' +
         '<div class="recipe"><div class="rp head">' + pal(p) + '<b>' + esc(p.label) + '</b></div>' +

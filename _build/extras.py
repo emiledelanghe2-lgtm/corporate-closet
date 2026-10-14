@@ -2,28 +2,16 @@
 
 # per outfit: seasons, one style, colors
 ATTRS = {
-    "fall-capsule-brown-tones":   dict(seasons=["fall", "winter"], style="quiet",   colors=["brown", "cream"]),
     "white-long-sleeve-top":      dict(seasons=["spring", "fall"], style="classic", colors=["cream", "brown"]),
     "white-button-down":          dict(seasons=["spring", "summer", "fall"], style="classic", colors=["cream", "brown"]),
     "leather-blazer":             dict(seasons=["fall", "spring"], style="edge",    colors=["brown", "cream"]),
-    "leather-trench-knit-dress":  dict(seasons=["fall", "winter"], style="edge",    colors=["brown", "cream"]),
-    "cream-shirt-white-trousers": dict(seasons=["spring", "summer"], style="classic", colors=["cream"]),
     "barrel-leg-jeans":           dict(seasons=["fall", "spring"], style="edge",    colors=["denim", "brown"]),
     "mock-neck-bodysuit":         dict(seasons=["fall", "winter", "spring"], style="quiet", colors=["brown", "cream"]),
-    "neutral-trench-tall-boots":  dict(seasons=["fall", "spring"], style="quiet",   colors=["cream"]),
-    "wide-leg-jeans-cuff":        dict(seasons=["spring", "fall"], style="edge",    colors=["denim"]),
-    "linen-blazer-shorts-set":    dict(seasons=["summer", "spring"], style="classic", colors=["cream"]),
-    "brown-knit-pleated-trousers": dict(seasons=["fall", "spring"], style="classic", colors=["brown", "grey"]),
     "knitwear-essentials":        dict(seasons=["fall", "winter"], style="classic", colors=["cream", "brown", "grey"]),
     "oversized-mock-neck-sweater": dict(seasons=["fall", "winter"], style="quiet",  colors=["brown", "cream"]),
-    "grey-v-neck-knit":           dict(seasons=["fall", "winter", "spring"], style="classic", colors=["grey"]),
-    "belted-wool-coat":           dict(seasons=["winter", "fall"], style="quiet",    colors=["grey"]),
-    "cream-blouse-contrast-trim": dict(seasons=["spring", "summer", "fall"], style="soft", colors=["cream", "brown"]),
     "office-siren":               dict(seasons=["fall", "winter"], style="edge",    colors=["grey"]),
     "coquette-bow-blouse":        dict(seasons=["spring", "summer"], style="soft", colors=["cream", "brown"]),
     "silk-scarf-styling":         dict(seasons=["fall", "spring"], style="soft",    colors=["grey"]),
-    "cream-vest-mini-skirt":      dict(seasons=["spring", "summer", "fall"], style="soft", colors=["cream", "brown"]),
-    "lace-skirt-brown-knit":      dict(seasons=["fall", "winter"], style="soft",    colors=["brown"]),
 }
 
 COLORS = [("brown", "Brown"), ("cream", "Cream & white"), ("grey", "Grey"), ("denim", "Denim")]
@@ -38,10 +26,10 @@ STYLES = {
 
 # (id, title, blurb, hero pin id)
 SEASONS = [
-    ("fall", "Fall", "Rich browns, warm layers and cozy knits.", "632966922682369892"),
-    ("winter", "Winter", "Wool coats, soft knitwear and tonal dressing.", "632966922682352597"),
-    ("spring", "Spring", "Trenches, crisp shirts and light layers.", "632966922682359264"),
-    ("summer", "Summer", "Linen, light tailoring and easy sets.", "632966922682352730"),
+    ("fall", "Fall", "Rich browns, warm layers and cozy knits.", "632966922682343968"),
+    ("winter", "Winter", "Wool coats, soft knitwear and tonal dressing.", "632966922682350919"),
+    ("spring", "Spring", "Trenches, crisp shirts and light layers.", "632966922682368948"),
+    ("summer", "Summer", "Linen, light tailoring and easy sets.", "632966922682404047"),
 ]
 
 # 8 pieces per season: (name, amazon query, cap in dollars for the budget link)
