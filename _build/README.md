@@ -15,10 +15,12 @@ Then commit and push. Needs Python 3 with Pillow (`pip3 install pillow`).
 | Short intro text and photo on the About page | `config.json`, fields `about_intro`, `about_photo` |
 | An exact affiliate link for one product | `affiliate_links.json`, key `outfit-slug/N` (N = product number, starting at 1) |
 | Product photo, price, "price checked" date, budget limit | `product_data.json`, same keys. Fields: `price`, `checked`, `image`, `url`, `cap` |
-| Outfits, tips, products | `outfits.py` |
+| Outfits, tips, products. A pin that sells an exact item is listed in `EXACT` at the bottom (slug, product number, link) and gets the Shop tag. Everything else shows as Inspo | `outfits.py` |
 | Seasons, quiz, capsule builder, checklist | `extras.py` |
 
 ## Notes
+
+- The Amazon tag was read from the destination links of the Pinterest pins (`thecorpora087-20`). Confirm it is correct.
 
 - Without a tag, shop buttons are plain Amazon searches. Add the tag to start earning.
 - "Budget finds" and "Premium picks" add an Amazon price filter to the search.

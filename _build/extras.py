@@ -3,6 +3,7 @@
 # per outfit: seasons, one style, colors
 ATTRS = {
     "fall-capsule-brown-tones":   dict(seasons=["fall", "winter"], style="quiet",   colors=["brown", "cream"]),
+    "white-long-sleeve-top":      dict(seasons=["spring", "fall"], style="classic", colors=["cream", "brown"]),
     "white-button-down":          dict(seasons=["spring", "summer", "fall"], style="classic", colors=["cream", "brown"]),
     "leather-blazer":             dict(seasons=["fall", "spring"], style="edge",    colors=["brown", "cream"]),
     "leather-trench-knit-dress":  dict(seasons=["fall", "winter"], style="edge",    colors=["brown", "cream"]),
@@ -79,12 +80,39 @@ CAPSULES = {
                ("Structured tote", "women work tote bag", 50)],
 }
 
-QUIZ = [
-    ("Pick your office staple", [("classic", "A crisp white shirt"), ("quiet", "A cozy fine knit"), ("soft", "A silk bow blouse"), ("edge", "A leather-look blazer")]),
-    ("Choose your palette", [("classic", "White, cream and grey"), ("quiet", "Chocolate, camel and cream"), ("soft", "Soft neutrals with a hint of lace"), ("edge", "Charcoal, black and deep brown")]),
-    ("Your office dress code", [("classic", "Smart casual"), ("quiet", "Relaxed but polished"), ("soft", "Creative and flexible"), ("edge", "Corporate and sharp")]),
-    ("Favorite finishing touch", [("classic", "A slim leather belt"), ("quiet", "A quality leather bag"), ("soft", "A silk scarf"), ("edge", "Statement boots")]),
-    ("Your Monday mood", [("classic", "Organized and ready"), ("quiet", "Calm and cozy"), ("soft", "Romantic and soft"), ("edge", "Confident and bold")]),
+# Quiz: pick a color combo (A = top, B = bottoms, layer, shoes), then real pieces.
+# palette: (id, label, colorA, colorB, swatchA, swatchB, style)
+PALETTES = [
+    ("cream-brown", "Cream & Brown", "cream", "brown", "#F1E8DA", "#6B4A35", "quiet"),
+    ("white-camel", "White & Camel", "white", "camel", "#FFFFFF", "#C19A6B", "classic"),
+    ("grey-black", "Grey & Black", "grey", "black", "#A8A8A8", "#1F1F1F", "edge"),
+    ("cream-navy", "Cream & Navy", "cream", "navy", "#F1E8DA", "#233450", "classic"),
+    ("burgundy-charcoal", "Burgundy & Charcoal", "burgundy", "charcoal", "#6E2230", "#3D3D42", "edge"),
+    ("beige-olive", "Beige & Olive", "beige", "olive", "#D8C7A8", "#6B6B3A", "soft"),
+]
+
+# step: (id, title, options); option: (label, amazon query, style, color-free?)
+QUIZ_STEPS = [
+    ("top", "Pick a top", [
+        ("{A} button down shirt", "women {A} button down shirt", "classic", False),
+        ("{A} fine knit sweater", "women {A} fine knit sweater", "quiet", False),
+        ("{A} silk-feel blouse", "women {A} satin blouse", "soft", False),
+        ("{A} mock neck bodysuit", "women {A} mock neck bodysuit", "edge", False)]),
+    ("bottom", "Pick your bottoms", [
+        ("{B} tailored trousers", "women {B} tailored trousers", "classic", False),
+        ("{B} wide-leg trousers", "women {B} wide leg trousers", "quiet", False),
+        ("{B} midi skirt", "women {B} midi skirt", "soft", False),
+        ("Dark wash straight jeans", "women dark wash straight jeans", "edge", True)]),
+    ("layer", "Pick a layer", [
+        ("{B} blazer", "women {B} blazer", "classic", False),
+        ("{B} wool coat", "women {B} wool blend coat", "quiet", False),
+        ("{A} cardigan", "women {A} cardigan", "soft", False),
+        ("{B} leather-look blazer", "women {B} faux leather blazer", "edge", False)]),
+    ("shoes", "Pick your shoes", [
+        ("{B} loafers", "women {B} loafers", "classic", False),
+        ("{B} knee-high boots", "women {B} knee high boots", "quiet", False),
+        ("{B} pointed flats", "women {B} pointed toe flats", "soft", False),
+        ("{B} ankle boots", "women {B} ankle boots", "edge", False)]),
 ]
 
 # capsule builder: (id, group, name, amazon query, cap)

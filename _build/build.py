@@ -12,9 +12,9 @@ from urllib.parse import quote_plus
 
 from PIL import Image
 
-from extras import (ATTRS, BUILDER, BUILDER_GROUPS, CAPSULES, CHECKLIST, COLORS, QUIZ,
-                    SEASONS, SIZES, STYLES)
-from outfits import CATEGORIES, CHECKLIST_PIN, OUTFITS, PROFILE
+from extras import (ATTRS, BUILDER, BUILDER_GROUPS, CAPSULES, CHECKLIST, COLORS, PALETTES,
+                    QUIZ_STEPS, SEASONS, SIZES, STYLES)
+from outfits import CATEGORIES, CHECKLIST_PIN, EXACT, OUTFITS, PROFILE
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -40,11 +40,17 @@ SITE = "The Corporate Closet"
 BY_SLUG = {o["slug"]: o for o in OUTFITS}
 for o in OUTFITS:
     o.update(ATTRS[o["slug"]])
+    o["exact"] = EXACT.get(o["slug"], {})
+    o["shop"] = bool(o["exact"])
+SHOPPABLE = [o for o in OUTFITS if o["shop"]]
+INSPO = [o for o in OUTFITS if not o["shop"]]
 STYLE_ORDER = list(STYLES)
 
 HEART = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.3 3 4.5 6.6 4.5c2 0 3.5 1.1 5.4 3.1 '
          '1.9-2 3.4-3.1 5.4-3.1 3.6 0 5.8 3.8 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>')
 HANGER = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2 2c-1 .3-2 .9-2 2v1m0 0L3.5 17.2c-.8.6-.4 1.8.6 1.8h15.8c1 0 1.4-1.2.6-1.8L12 12z"/></svg>')
+LEGEND = ('<div class="legend"><span><b class="tag">Shop</b> The exact piece in the photo links straight to the item.</span>'
+          '<span><b class="tag inspo">Inspo</b> A styling idea. We show similar pieces you can find.</span></div>')
 DISCLOSURE = "As an Amazon Associate I earn from qualifying purchases. Links on this site are affiliate links."
 
 
@@ -88,10 +94,11 @@ def heart_btn(slug):
 
 def card(o, r):
     w, h = img_dims(o["pin"])
-    return (f'<div class="card" data-colors="{" ".join(o["colors"])}" data-style="{o["style"]}">'
+    tag = '<b class="tag">Shop</b>' if o["shop"] else '<b class="tag inspo">Inspo</b>'
+    return (f'<div class="card" data-colors="{" ".join(o["colors"])}" data-style="{o["style"]}" data-shop="{int(o["shop"])}">'
             f'<a class="cl" href="{r}outfits/{o["slug"]}/index.html">'
             f'<div class="ph"><img src="{r}img/{o["pin"]}.jpg" alt="{esc(o["title"])}" loading="lazy" width="{w}" height="{h}">'
-            f'<b class="tag">Shop</b></div><span class="t">{esc(o["title"])}</span></a>{heart_btn(o["slug"])}</div>')
+            f'{tag}</div><span class="t">{esc(o["title"])}</span></a>{heart_btn(o["slug"])}</div>')
 
 
 def tile(href, img, name, small):
@@ -125,23 +132,26 @@ def newsletter(r):
   </section>"""
 
 
-def prod_row(label, query, cap, url_exact, data, fixed_key):
+def prod_row(label, query, cap, url_exact, data, kind="similar"):
+    """kind: exact (the pin links to this item), similar (close match), find (generic capsule piece)."""
     price = ""
     if data.get("price"):
         chk = f' <span class="chk">checked {esc(data["checked"])}</span>' if data.get("checked") else ""
         price = f'<span class="price">{esc(data["price"])}{chk}</span>'
     thumb = (f'<img src="{esc(data["image"])}" alt="" loading="lazy">' if data.get("image") else HANGER)
-    main = url_exact or amazon(query)
-    fixed = ' data-fixed="1"' if url_exact else ""
-    alts = ""
-    if not url_exact:
-        alts = (f'<span class="alts"><a data-q="{esc(query)}" data-x="{esc(budget_x(cap))}" href="{esc(amazon(query, budget_x(cap)))}" '
-                f'target="_blank" rel="sponsored nofollow noopener">Budget finds</a>'
-                f'<a data-q="{esc(query)}" data-x="{esc(premium_x(cap))}" href="{esc(amazon(query, premium_x(cap)))}" '
-                f'target="_blank" rel="sponsored nofollow noopener">Premium picks</a></span>')
+    if kind == "exact":
+        badge = '<span class="badge">Exact item from the pin</span>'
+        btn = (f'<a class="btn solid small buy" data-fixed="1" href="{esc(url_exact)}" target="_blank" '
+               f'rel="sponsored nofollow noopener">Shop this item</a>')
+        return (f'<div class="prod exact"><div class="thumb">{thumb}</div><div class="pi">{badge}<b>{esc(label)}</b>{price}</div>{btn}</div>')
+    text = "Find similar" if kind == "similar" else "Find on Amazon"
+    alts = (f'<span class="alts"><a data-q="{esc(query)}" data-x="{esc(budget_x(cap))}" href="{esc(amazon(query, budget_x(cap)))}" '
+            f'target="_blank" rel="sponsored nofollow noopener">Budget finds</a>'
+            f'<a data-q="{esc(query)}" data-x="{esc(premium_x(cap))}" href="{esc(amazon(query, premium_x(cap)))}" '
+            f'target="_blank" rel="sponsored nofollow noopener">Premium picks</a></span>')
     return (f'<div class="prod"><div class="thumb">{thumb}</div><div class="pi"><b>{esc(label)}</b>{price}{alts}</div>'
-            f'<a class="btn solid small buy" data-q="{esc(query)}" data-x=""{fixed} href="{esc(main)}" target="_blank" '
-            f'rel="sponsored nofollow noopener">Shop on Amazon</a></div>')
+            f'<a class="btn ghost small buy" data-q="{esc(query)}" data-x="" href="{esc(amazon(query))}" target="_blank" '
+            f'rel="sponsored nofollow noopener">{text}</a></div>')
 
 
 CSS = r"""
@@ -310,7 +320,7 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .qbar{height:6px;border-radius:99px;background:var(--sand);overflow:hidden}
 .qbar i{display:block;height:100%;background:var(--espresso);transition:width .3s}
 .qcount{margin:14px 0 6px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mocha)}
-.quiz h2{font-size:34px;margin-bottom:16px}
+.quiz h2{font-size:34px;margin:6px 0 16px}
 .opts{display:grid;gap:10px}
 .opt{width:100%;min-height:56px;padding:14px 20px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--card);font:inherit;font-size:17px;color:var(--espresso);cursor:pointer}
 .opt:hover{border-color:var(--espresso)}
@@ -328,6 +338,32 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .pick input{position:absolute;opacity:0;pointer-events:none}
 .pick:has(input:checked){background:var(--espresso);border-color:var(--espresso);color:var(--cream)}
 .pick:has(input:focus-visible){outline:2px solid var(--mocha);outline-offset:3px}
+.tag.inspo{background:rgba(43,26,16,.78);color:#F4EFE8}
+.legend{display:grid;gap:8px;margin:14px 0 4px;font-size:14px;color:var(--mocha)}
+.legend span{display:flex;align-items:center;gap:10px}
+.legend .tag{position:static;flex:none}
+.status{display:inline-block;margin-top:12px;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:500}
+.status.is-shop{background:var(--espresso);color:var(--cream)}
+.status.is-inspo{border:1px solid var(--mocha);color:var(--mocha)}
+.note{margin:-4px 0 12px;color:var(--mocha);font-size:15px}
+.prod.exact{border-color:var(--espresso);background:#fff}
+.badge{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mocha)}
+.pal{display:inline-flex;flex:none}
+.pal i{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
+.pal i + i{margin-left:-9px}
+.dot{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.2);flex:none}
+.opt{display:flex;align-items:center;gap:14px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts.two .opt{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+.chosen{display:flex;align-items:center;gap:10px;margin:0 0 6px;font-size:14px;color:var(--mocha)}
+.back{margin-top:16px}
+.linkbtn{background:none;border:0;font:inherit;color:var(--mocha);text-decoration:underline;cursor:pointer;min-height:44px;padding:0 4px}
+.recipe{display:grid;gap:8px;max-width:520px;margin:22px auto 0;text-align:left}
+.rp{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.rp b{font-weight:500;flex:1;line-height:1.3}
+.rp.head{background:transparent;border:0;padding-left:4px}
+.result .disc{text-align:center}
+.result .rt{font-size:30px;margin:30px 0 -6px;font-weight:500;font-style:italic}
 .sum{padding:22px;border-radius:22px;background:var(--espresso);color:var(--cream)}
 .sum .n{font-family:var(--serif);font-size:56px;line-height:1;font-weight:600}
 .sum p{margin-top:6px;color:#D9CEC2}
@@ -427,9 +463,9 @@ JS = r"""
   }
   function byslug(s) { return CC.outfits.filter(function (o) { return o.slug === s; })[0]; }
   function card(o) {
-    return '<div class="card" data-colors="' + o.colors.join(' ') + '" data-style="' + o.style + '">' +
+    return '<div class="card" data-colors="' + o.colors.join(' ') + '" data-style="' + o.style + '" data-shop="' + (o.shop ? 1 : 0) + '">' +
       '<a class="cl" href="' + root + 'outfits/' + o.slug + '/index.html"><div class="ph"><img src="' + root + 'img/' + o.pin +
-      '.jpg" alt="' + esc(o.title) + '" loading="lazy" width="' + o.w + '" height="' + o.h + '"><b class="tag">Shop</b></div>' +
+      '.jpg" alt="' + esc(o.title) + '" loading="lazy" width="' + o.w + '" height="' + o.h + '">' + (o.shop ? '<b class="tag">Shop</b>' : '<b class="tag inspo">Inspo</b>') + '</div>' +
       '<span class="t">' + esc(o.title) + '</span></a>' +
       '<button class="heart" type="button" data-slug="' + o.slug + '" aria-pressed="false" aria-label="Save this outfit">' + HEART + '</button></div>';
   }
@@ -465,7 +501,8 @@ JS = r"""
   var otw = document.getElementById('otw');
   if (otw && CC.outfits) {
     var week = Math.floor(Date.now() / 604800000);
-    var o = CC.outfits[week % CC.outfits.length];
+    var pool = CC.outfits.filter(function (x) { return x.shop; });
+    var o = pool[week % pool.length];
     otw.innerHTML = '<a href="' + root + 'outfits/' + o.slug + '/index.html"><img src="' + root + 'img/' + o.pin + '.jpg" alt="' + esc(o.title) + '"></a>' +
       '<div><p class="eyebrow">Outfit of the week</p><h3>' + esc(o.title) + '</h3><p class="lead">' + esc(o.intro) + '</p>' +
       '<a class="btn solid" href="' + root + 'outfits/' + o.slug + '/index.html">Shop this look</a></div>';
@@ -494,7 +531,7 @@ JS = r"""
   /* shop page color filter */
   var cf = document.getElementById('colorfilter');
   if (cf) {
-    var cards = all('#grid .card');
+    var cards = all('.fgrid .card');
     all('.chip', cf).forEach(function (chip) {
       chip.addEventListener('click', function () {
         var f = chip.getAttribute('data-filter');
@@ -504,35 +541,54 @@ JS = r"""
     });
   }
 
-  /* style quiz */
+  /* style quiz: pick a color combo, then real pieces */
   var quiz = document.getElementById('quiz');
   if (quiz) {
-    var step = 0, score = {};
-    function show(style) {
-      var st = CC.styles[style], list = CC.outfits.filter(function (o) { return o.style === style; }).slice(0, 4);
-      quiz.innerHTML = '<div class="result"><p class="eyebrow">Your office style</p><h2>' + esc(st.name) + '</h2><p class="lead">' + esc(st.desc) +
-        '</p><div class="grid">' + list.map(card).join('') + '</div><div class="acts"><button class="btn ghost" id="retake" type="button">Retake the quiz</button>' +
-        '<a class="btn solid" href="' + root + 'shop/index.html">Shop all outfits</a></div></div>';
-      document.getElementById('retake').addEventListener('click', function () { step = 0; score = {}; history.replaceState(null, '', location.pathname); render(); });
+    var picks = [];
+    function cap(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+    function fill(t, p) { return t.replace(/\{A\}/g, p.a).replace(/\{B\}/g, p.b); }
+    function pal(p) { return '<span class="pal"><i style="background:' + p.sa + '"></i><i style="background:' + p.sb + '"></i></span>'; }
+    function dotColor(opt, p) { return opt.fix ? '#3B4E6B' : (opt.t.indexOf('{A}') > -1 ? p.sa : p.sb); }
+    function result() {
+      var p = CC.palettes[picks[0]], score = {};
+      score[p.style] = 1;
+      var chosen = CC.steps.map(function (st, i) { var op = st.opts[picks[i + 1]]; score[op.s] = (score[op.s] || 0) + 1; return op; });
+      var best = CC.styleOrder[0], max = -1;
+      CC.styleOrder.forEach(function (k) { if ((score[k] || 0) > max) { max = score[k] || 0; best = k; } });
+      var st = CC.styles[best];
+      var list = CC.outfits.filter(function (o) { return o.style === best; }).sort(function (x, y) { return (y.shop ? 1 : 0) - (x.shop ? 1 : 0); }).slice(0, 4);
+      history.replaceState(null, '', '#' + picks.join('.'));
+      quiz.innerHTML = '<div class="result"><p class="eyebrow">Your outfit</p><h2>' + esc(st.name) + '</h2><p class="lead">' + esc(st.desc) + '</p>' +
+        '<div class="recipe"><div class="rp head">' + pal(p) + '<b>' + esc(p.label) + '</b></div>' +
+        chosen.map(function (op) {
+          return '<div class="rp"><i class="dot" style="background:' + dotColor(op, p) + '"></i><b>' + esc(cap(fill(op.t, p))) + '</b>' +
+            '<a class="btn ghost small" target="_blank" rel="sponsored nofollow noopener" href="' + amazon(fill(op.q, p), '') + '">Find similar</a></div>';
+        }).join('') + '</div>' +
+        '<p class="disc">These open an Amazon search for similar pieces in your colors.</p>' +
+        '<h3 class="rt">Looks that match your style</h3><div class="grid">' + list.map(card).join('') + '</div>' +
+        '<div class="acts"><button class="btn ghost" id="retake" type="button">Retake the quiz</button><a class="btn solid" href="' + root + 'shop/index.html">Shop all outfits</a></div></div>';
+      document.getElementById('retake').addEventListener('click', function () { picks = []; history.replaceState(null, '', location.pathname); render(); });
       refreshHearts();
     }
     function render() {
-      if (step >= CC.quiz.length) {
-        var best = 'classic', max = -1;
-        CC.styleOrder.forEach(function (k) { if ((score[k] || 0) > max) { max = score[k] || 0; best = k; } });
-        history.replaceState(null, '', '#' + best);
-        show(best);
-        return;
+      var total = CC.steps.length + 1, n = picks.length;
+      if (n >= total) { result(); return; }
+      var head = '<div class="qbar"><i style="width:' + (n / total * 100) + '%"></i></div><p class="qcount">Step ' + (n + 1) + ' of ' + total + '</p>';
+      if (n === 0) {
+        quiz.innerHTML = head + '<h2>Choose your color combination</h2><div class="opts two">' + CC.palettes.map(function (p, i) {
+          return '<button class="opt pick-pal" type="button" data-i="' + i + '">' + pal(p) + '<span>' + esc(p.label) + '</span></button>';
+        }).join('') + '</div>';
+      } else {
+        var p = CC.palettes[picks[0]], st = CC.steps[n - 1];
+        quiz.innerHTML = head + '<p class="chosen">' + pal(p) + '<span>' + esc(p.label) + '</span></p><h2>' + esc(st.title) + '</h2><div class="opts">' +
+          st.opts.map(function (op, i) { return '<button class="opt" type="button" data-i="' + i + '"><i class="dot" style="background:' + dotColor(op, p) + '"></i><span>' + esc(cap(fill(op.t, p))) + '</span></button>'; }).join('') + '</div>' +
+          '<p class="back"><button type="button" class="linkbtn" id="back">Back</button></p>';
+        document.getElementById('back').addEventListener('click', function () { picks.pop(); render(); });
       }
-      var q = CC.quiz[step];
-      quiz.innerHTML = '<div class="qbar"><i style="width:' + (step / CC.quiz.length * 100) + '%"></i></div><p class="qcount">Question ' + (step + 1) + ' of ' + CC.quiz.length +
-        '</p><h2>' + esc(q.q) + '</h2><div class="opts">' + q.a.map(function (a, i) { return '<button class="opt" type="button" data-s="' + a.s + '">' + esc(a.t) + '</button>'; }).join('') + '</div>';
-      all('.opt', quiz).forEach(function (b) {
-        b.addEventListener('click', function () { var s = b.getAttribute('data-s'); score[s] = (score[s] || 0) + 1; step++; render(); });
-      });
+      all('.opt', quiz).forEach(function (b) { b.addEventListener('click', function () { picks.push(parseInt(b.getAttribute('data-i'), 10)); render(); }); });
     }
-    var h = location.hash.replace('#', '');
-    if (CC.styles[h]) show(h); else render();
+    var m = /^#(\d)\.(\d)\.(\d)\.(\d)\.(\d)$/.exec(location.hash);
+    if (m && CC.palettes[+m[1]] && CC.steps.every(function (st, i) { return st.opts[+m[i + 2]]; })) { picks = m.slice(1).map(Number); result(); } else render();
   }
 
   /* capsule builder */
@@ -548,7 +604,7 @@ JS = r"""
       out.innerHTML = '<div class="n">' + combos + '</div><p>possible outfit combinations from ' + sel.length + ' pieces. ' + msg + '</p>' +
         (sel.length ? '<ul>' + sel.map(function (b) {
           return '<li><span>' + esc(b.getAttribute('data-n')) + '</span><a target="_blank" rel="sponsored nofollow noopener" href="' +
-            amazon(b.getAttribute('data-q'), '') + '">Shop</a></li>';
+            amazon(b.getAttribute('data-q'), '') + '">Find</a></li>';
         }).join('') + '</ul>' : '');
     }
     boxes.forEach(function (b) { b.addEventListener('change', calc); });
@@ -640,8 +696,9 @@ def build():
         "sizes": [{"key": k, "label": l, "prefix": p} for k, l, p in SIZES],
         "styles": {k: {"name": v[0], "desc": v[1]} for k, v in STYLES.items()},
         "styleOrder": STYLE_ORDER,
-        "quiz": [{"q": q, "a": [{"s": s, "t": t} for s, t in a]} for q, a in QUIZ],
-        "outfits": [{"slug": o["slug"], "title": o["title"], "intro": o["intro"], "pin": o["pin"], "style": o["style"],
+        "palettes": [{"id": i, "label": l, "a": a, "b": b, "sa": sa, "sb": sb, "style": st} for i, l, a, b, sa, sb, st in PALETTES],
+        "steps": [{"id": i, "title": t, "opts": [{"t": ot, "q": oq, "s": os_, "fix": f} for ot, oq, os_, f in opts]} for i, t, opts in QUIZ_STEPS],
+        "outfits": [{"slug": o["slug"], "title": o["title"], "intro": o["intro"], "pin": o["pin"], "style": o["style"], "shop": o["shop"],
                      "colors": o["colors"], "w": img_dims(o["pin"])[0], "h": img_dims(o["pin"])[1]} for o in OUTFITS],
     }
     write("assets/data.js", "window.CC=" + json.dumps(data, separators=(",", ":")) + ";\n")
@@ -652,19 +709,19 @@ def build():
     mosaic = "".join(
         f'<a href="{r}outfits/{o["slug"]}/index.html"><img src="{r}img/{o["pin"]}.jpg" alt="{esc(o["title"])}" width="736" height="1104">'
         + (f'<span class="cap">{esc(o["title"])}</span>' if i == 0 else "") + "</a>" for i, o in enumerate(m))
-    first = OUTFITS[0]
+    first = SHOPPABLE[0]
     season_tiles = "".join(tile(f"{r}seasons/{k}/index.html", f"{r}img/{pin}.jpg", t, b) for k, t, b, pin in SEASONS)
     home = f"""
   <section class="hero">
     <div>
       <p class="eyebrow">Workwear &amp; Office Outfits</p>
       <h1>Office style for the <em>corporate girlie</em></h1>
-      <p class="lead">Affordable business casual looks, capsule wardrobe staples and fresh outfit ideas for the office. Every look comes with the exact pieces to shop.</p>
+      <p class="lead">Affordable business casual looks, capsule wardrobe staples and fresh outfit ideas for the office. Shop the exact piece from a look, or find similar pieces for every outfit.</p>
       <div class="cta">
         <a class="btn solid" href="{r}shop/index.html">Shop outfits</a>
         <a class="btn ghost" href="{r}quiz/index.html">Find your style</a>
       </div>
-      <div class="stats"><span>New outfit ideas every week</span><span>Affordable finds</span><span>Shop each look in one tap</span></div>
+      <div class="stats"><span>New outfit ideas every week</span><span>Affordable finds</span><span>Exact pieces and similar finds</span></div>
     </div>
     <div class="mosaic">{mosaic}</div>
   </section>
@@ -683,9 +740,10 @@ def build():
   </section>
 
   <section class="sec">
-    <div class="sec-head"><h2>Newest outfits</h2><p>Tap a look to see the styling tips and shop every piece. Tap the heart to save it.</p></div>
-    <div class="grid">{"".join(card(o, r) for o in OUTFITS[:8])}</div>
-    <p style="text-align:center;margin-top:22px"><a class="btn ghost" href="{r}shop/index.html">See all outfits</a></p>
+    <div class="sec-head"><h2>Shop these looks</h2><p>The exact piece in each photo links straight to the item. Tap the heart to save a look.</p></div>
+    {LEGEND}
+    <div class="grid">{"".join(card(o, r) for o in SHOPPABLE)}</div>
+    <p style="text-align:center;margin-top:22px"><a class="btn ghost" href="{r}shop/index.html">See all outfits and inspiration</a></p>
   </section>
 
   <section class="sec">
@@ -694,7 +752,7 @@ def build():
   </section>
 
   <section class="sec tools">
-    <a class="tool" href="{r}quiz/index.html"><b>What is your office style?</b><p>Five quick questions, then outfits picked for you.</p><span>Take the quiz</span></a>
+    <a class="tool" href="{r}quiz/index.html"><b>What is your office style?</b><p>Pick your colors and your pieces, then get your own outfit.</p><span>Take the quiz</span></a>
     <a class="tool" href="{r}capsule-builder/index.html"><b>Build your capsule</b><p>Pick your pieces and see how many outfits they make.</p><span>Start building</span></a>
   </section>
 
@@ -733,13 +791,16 @@ def build():
   <nav class="crumbs" aria-label="Breadcrumb"><a href="{r}index.html">Home</a> / Shop outfits</nav>
   <section class="pagehead">
     <h1>Shop outfits</h1>
-    <p class="lead">Browse every look. Each one comes with styling tips and the pieces to shop.</p>
+    <p class="lead">Looks marked Shop link straight to the exact item. Looks marked Inspo are styling ideas, with similar pieces to find.</p>
   </section>
   <section class="sec" style="margin-top:28px"><div class="cats">{"".join(cat_tile(c, r) for c in CATEGORIES)}</div></section>
   <section class="sec">
-    <div class="sec-head"><h2>All outfits</h2></div>
     <div class="chips" id="colorfilter" role="group" aria-label="Filter by color">{chips}</div>
-    <div class="grid" id="grid">{"".join(card(o, r) for o in OUTFITS)}</div>
+    {LEGEND}
+    <div class="sec-head" style="margin-top:22px"><h2>Shop these looks</h2><p>The exact piece in the photo links straight to the item.</p></div>
+    <div class="grid fgrid">{"".join(card(o, r) for o in SHOPPABLE)}</div>
+    <div class="sec-head" style="margin-top:48px"><h2>More inspiration</h2><p>Styling ideas. We show similar pieces you can find on Amazon.</p></div>
+    <div class="grid fgrid">{"".join(card(o, r) for o in INSPO)}</div>
   </section>"""
     write("shop/index.html", page(1, f"Shop outfits | {SITE}", "Browse all office outfit ideas, business casual looks and workwear essentials.", shop, "shop/", nav="shop"))
 
@@ -749,6 +810,13 @@ def build():
             f'<a class="pill" href="{"../"*2}shop/{c[0]}/index.html"' + (' aria-current="page"' if c[0] == key else "") + f'>{esc(c[1])}</a>'
             for c in CATEGORIES)
         rr = "../../"
+        shop_items = [o for o in items if o["shop"]]
+        inspo_items = [o for o in items if not o["shop"]]
+        cat_sections = ""
+        if shop_items:
+            cat_sections += f'<div class="sec-head"><h2>Shop these looks</h2><p>The exact piece links straight to the item.</p></div><div class="grid">{"".join(card(o, rr) for o in shop_items)}</div>'
+        if inspo_items:
+            cat_sections += f'<div class="sec-head" style="margin-top:{40 if shop_items else 0}px"><h2>Inspiration</h2><p>Styling ideas, with similar pieces to find.</p></div><div class="grid">{"".join(card(o, rr) for o in inspo_items)}</div>'
         body = f"""
   <nav class="crumbs" aria-label="Breadcrumb"><a href="{rr}index.html">Home</a> / <a href="{rr}shop/index.html">Shop outfits</a> / {esc(name)}</nav>
   <section class="pagehead">
@@ -756,7 +824,7 @@ def build():
     <p class="lead">{esc(desc)}</p>
     <div class="pills">{pills}</div>
   </section>
-  <section class="sec" style="margin-top:28px"><div class="grid">{"".join(card(o, rr) for o in items)}</div></section>"""
+  <section class="sec" style="margin-top:28px">{cat_sections}</section>"""
         write(f"shop/{key}/index.html", page(2, f"{name} | {SITE}", desc, body, f"shop/{key}/", nav="shop"))
 
     # ---------- outfit pages ----------
@@ -767,16 +835,34 @@ def build():
     for o in OUTFITS:
         w, h = img_dims(o["pin"])
         cname = CAT[o["cat"]][1]
-        rows = []
+        exact_rows, similar_rows = [], []
         for i, (name, q) in enumerate(o["products"], start=1):
             key = f"{o['slug']}/{i}"
             d = PDATA.get(key, {})
-            exact = d.get("url") or LINKS.get(key)
-            rows.append(prod_row(name, q, d.get("cap", cap_for(name)), exact, d, key))
+            url = d.get("url") or LINKS.get(key) or o["exact"].get(i)
+            cap = d.get("cap", cap_for(name))
+            if url:
+                exact_rows.append(prod_row(name, q, cap, url, d, "exact"))
+            else:
+                similar_rows.append(prod_row(name, q, cap, None, d, "similar"))
+        size_html = f'<div class="size" id="sizes" role="radiogroup" aria-label="Your fit"><span>Your fit:</span>{size_chips}</div>'
+        if exact_rows:
+            shop_html = (f'<div class="block" id="shop"><h2>Shop this look</h2><p class="note">The pin links to this exact item.</p>'
+                         f'<div class="prods">{"".join(exact_rows)}</div></div>')
+            if similar_rows:
+                shop_html += (f'<div class="block" id="similar"><h2>Find similar pieces</h2>'
+                              f'<p class="note">The other pieces in this look. These are close matches, not the exact items.</p>'
+                              f'{size_html}<div class="prods">{"".join(similar_rows)}</div></div>')
+            top_btn, status = "Shop the exact piece", "Shoppable look"
+        else:
+            shop_html = (f'<div class="block" id="shop"><h2>Get the look</h2>'
+                         f'<p class="note">This photo is styling inspiration. There is no direct link to these exact pieces, so these are close matches you can find.</p>'
+                         f'{size_html}<div class="prods">{"".join(similar_rows)}</div></div>')
+            top_btn, status = "Find similar pieces", "Style inspiration"
         tips = "".join(f"<li>{esc(t)}</li>" for t in o["tips"])
         related = [x for x in OUTFITS if x["cat"] == o["cat"] and x["slug"] != o["slug"]]
         related += [x for x in OUTFITS if x["cat"] != o["cat"] and x["slug"] != o["slug"]]
-        shopbar = '<div class="shopbar"><a class="btn solid" href="#shop">Shop the whole look</a></div>'
+        shopbar = f'<div class="shopbar"><a class="btn solid" href="#shop">{top_btn}</a></div>'
         body = f"""
   <nav class="crumbs" aria-label="Breadcrumb"><a href="{r}index.html">Home</a> / <a href="{r}shop/index.html">Shop outfits</a> / <a href="{r}shop/{o["cat"]}/index.html">{esc(cname)}</a></nav>
   <article class="outfit">
@@ -784,13 +870,12 @@ def build():
     <div>
       <p class="eyebrow">{esc(cname)}</p>
       <h1>{esc(o["title"])}</h1>
+      <p class="status {"is-shop" if o["shop"] else "is-inspo"}">{status}</p>
       <p class="lead">{esc(o["intro"])}</p>
-      <p class="jump"><a class="btn solid" href="#shop">Shop the whole look</a></p>
+      <p class="jump"><a class="btn solid" href="#shop">{top_btn}</a></p>
       <div class="block"><h2>Styling tips</h2><ul class="tips">{tips}</ul></div>
-      <div class="block" id="shop"><h2>Shop this look</h2>
-        <div class="size" id="sizes" role="radiogroup" aria-label="Your fit"><span>Your fit:</span>{size_chips}</div>
-        <div class="prods">{"".join(rows)}</div>
-        <p class="disc">Prices change often, so check the current price on Amazon. Budget finds and Premium picks open the same search filtered by price. {DISCLOSURE}</p></div>
+      {shop_html}
+      <p class="disc">Prices change often, so check the current price on Amazon. Budget finds and Premium picks open the same search filtered by price. {DISCLOSURE}</p>
       <p class="save"><a class="btn ghost" href="{PIN}{o["pin"]}/" target="_blank" rel="noopener">Save on Pinterest</a></p>
     </div>
   </article>
@@ -813,7 +898,7 @@ def build():
     write("seasons/index.html", page(1, f"Seasonal capsules | {SITE}", "A capsule wardrobe for every season, with outfits and shopping links.", body, "seasons/", nav="seasons"))
     r = "../../"
     for k, t, blurb, pin in SEASONS:
-        rows = "".join(prod_row(n, q, cap, None, {}, f"{k}/{i}") for i, (n, q, cap) in enumerate(CAPSULES[k], start=1))
+        rows = "".join(prod_row(n, q, cap, None, {}, "find") for n, q, cap in CAPSULES[k])
         items = [o for o in OUTFITS if k in o["seasons"]]
         size_html = f'<div class="size" id="sizes" role="radiogroup" aria-label="Your fit"><span>Your fit:</span>{size_chips}</div>'
         body = f"""
@@ -829,9 +914,9 @@ def build():
     r = "../"
     body = f"""
   <nav class="crumbs" aria-label="Breadcrumb"><a href="{r}index.html">Home</a> / Style quiz</nav>
-  <section class="pagehead"><h1>What is your office style?</h1><p class="lead">Five quick questions. Then outfits picked for you.</p></section>
+  <section class="pagehead"><h1>What is your office style?</h1><p class="lead">Pick a color combination, then choose your pieces. You get your own outfit and the looks that match it.</p></section>
   <div class="quiz" id="quiz"><p class="lead">The quiz needs JavaScript. You can still <a href="{r}shop/index.html" style="text-decoration:underline">browse all outfits</a>.</p></div>"""
-    write("quiz/index.html", page(1, f"Style quiz | {SITE}", "Take the quiz to find your office style and the outfits that match it.", body, "quiz/", nav="quiz"))
+    write("quiz/index.html", page(1, f"Style quiz | {SITE}", "Pick your colors and pieces to build your own office outfit and find your style.", body, "quiz/", nav="quiz"))
 
     # ---------- capsule builder ----------
     groups = ""
@@ -905,9 +990,9 @@ def build():
     base = CFG["site_url"].rstrip("/") if CFG["site_url"] else "https://YOUR-SITE"
     lines = ["# Pin destination links", "",
              f"Put the link in the 'Destination link' field of each Pinterest pin. Base URL: {base}", "",
-             "| Pin | Destination link |", "|---|---|"]
+             "| Pin | Destination link | Pin sells an exact item |", "|---|---|---|"]
     for o in OUTFITS:
-        lines.append(f"| {o['title']} | {base}/outfits/{o['slug']}/ |")
+        lines.append(f"| {o['title']} | {base}/outfits/{o['slug']}/ | {'yes' if o['shop'] else 'no (inspiration)'} |")
     lines.append("")
     open(os.path.join(os.path.dirname(ROOT), "corporate-closet-pin-links.md"), "w").write("\n".join(lines))
     print(f"built {len(OUTFITS)} outfits, {len(CATEGORIES)} categories, {len(SEASONS)} seasons")
