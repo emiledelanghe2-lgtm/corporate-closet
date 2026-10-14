@@ -13,7 +13,7 @@ from urllib.parse import quote_plus
 from PIL import Image
 
 from extras import (ATTRS, BUILDER, BUILDER_GROUPS, CAPSULES, CHECKLIST, COLORS, PALETTES,
-                    QUIZ_STEPS, SEASONS, SIZES, STYLES)
+                    QUIZ_STEPS, SEASONS, SIZES, STYLES, TOPICS, classify)
 from outfits import CATEGORIES, CHECKLIST_PIN, EXACT, OUTFITS, PROFILE
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -42,6 +42,16 @@ for o in OUTFITS:
     o.update(ATTRS[o["slug"]])
     o["exact"] = EXACT.get(o["slug"], {})
     o["shop"] = bool(o["exact"])
+PRODUCTS = []
+for o in OUTFITS:
+    topics = []
+    for i, (pname, pq) in enumerate(o["products"], start=1):
+        topic, sub = classify(pname)
+        if topic not in topics:
+            topics.append(topic)
+        PRODUCTS.append({"topic": topic, "sub": sub, "name": pname, "q": pq, "slug": o["slug"], "title": o["title"],
+                         "url": (PDATA.get(f"{o['slug']}/{i}", {}).get("url") or LINKS.get(f"{o['slug']}/{i}") or o["exact"].get(i) or "")})
+    o["topics"] = topics
 SHOPPABLE = [o for o in OUTFITS if o["shop"]]
 INSPO = [o for o in OUTFITS if not o["shop"]]
 STYLE_ORDER = list(STYLES)
@@ -95,7 +105,7 @@ def heart_btn(slug):
 def card(o, r):
     w, h = img_dims(o["pin"])
     tag = '<b class="tag">Shop</b>' if o["shop"] else '<b class="tag inspo">Inspo</b>'
-    return (f'<div class="card" data-colors="{" ".join(o["colors"])}" data-style="{o["style"]}" data-shop="{int(o["shop"])}">'
+    return (f'<div class="card" data-colors="{" ".join(o["colors"])}" data-style="{o["style"]}" data-topics="{" ".join(o["topics"])}" data-shop="{int(o["shop"])}">'
             f'<a class="cl" href="{r}outfits/{o["slug"]}/index.html">'
             f'<div class="ph"><img src="{r}img/{o["pin"]}.jpg" alt="{esc(o["title"])}" loading="lazy" width="{w}" height="{h}">'
             f'{tag}</div><span class="t">{esc(o["title"])}</span></a>{heart_btn(o["slug"])}</div>')
@@ -218,6 +228,7 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .card[hidden]{display:none}
+[hidden]{display:none!important}
 .card .cl{display:block}
 .ph{position:relative}
 .card img{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--sand)}
@@ -364,6 +375,14 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .rp.head{background:transparent;border:0;padding-left:4px}
 .result .disc{text-align:center}
 .result .rt{font-size:30px;margin:30px 0 -6px;font-weight:500;font-style:italic}
+.chip small{opacity:.7;font-size:12px}
+.pieces{margin-top:6px;padding:20px 18px 24px;background:var(--sand);border-radius:22px}
+.pieces h2{font-size:32px}
+.pieces .note{margin:4px 0 0}
+.pieces .prod{background:var(--card)}
+.sub{font-family:var(--serif);font-size:24px;font-weight:600;margin:22px 0 10px}
+.from{font-size:13px;color:var(--mocha)}
+.from a{text-decoration:underline;text-underline-offset:3px}
 .sum{padding:22px;border-radius:22px;background:var(--espresso);color:var(--cream)}
 .sum .n{font-family:var(--serif);font-size:56px;line-height:1;font-weight:600}
 .sum p{margin-top:6px;color:#D9CEC2}
@@ -528,17 +547,45 @@ JS = r"""
     applySize(cur);
   }
 
-  /* shop page color filter */
-  var cf = document.getElementById('colorfilter');
-  if (cf) {
-    var cards = all('.fgrid .card');
-    all('.chip', cf).forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        var f = chip.getAttribute('data-filter');
-        all('.chip', cf).forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
-        cards.forEach(function (c) { c.hidden = f !== 'all' && c.getAttribute('data-colors').split(' ').indexOf(f) < 0; });
+  /* shop page: filter by type, with the pieces grouped by subtype */
+  var tf = document.getElementById('topicfilter');
+  if (tf) {
+    var cards = all('.fgrid .card'), pieces = document.getElementById('pieces');
+    var HANGER = '__HANGER__';
+    function row(p) {
+      var exact = !!p.url;
+      return '<div class="prod' + (exact ? ' exact' : '') + '"><div class="thumb">' + HANGER + '</div><div class="pi">' +
+        (exact ? '<span class="badge">Exact item from the pin</span>' : '') + '<b>' + esc(p.name) + '</b>' +
+        '<span class="from">From <a href="' + root + 'outfits/' + p.slug + '/index.html">' + esc(p.title) + '</a></span></div>' +
+        '<a class="btn ' + (exact ? 'solid' : 'ghost') + ' small buy" target="_blank" rel="sponsored nofollow noopener" href="' +
+        (exact ? p.url : amazon(p.q, '')) + '">' + (exact ? 'Shop this item' : 'Find similar') + '</a></div>';
+    }
+    function apply(f, push) {
+      all('.chip', tf).forEach(function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-filter') === f)); });
+      cards.forEach(function (c) { c.hidden = f !== 'all' && c.getAttribute('data-topics').split(' ').indexOf(f) < 0; });
+      all('.fgrid').forEach(function (g) {
+        var any = all('.card', g).some(function (c) { return !c.hidden; });
+        g.hidden = !any;
+        var h = g.previousElementSibling;
+        if (h && h.classList.contains('sec-head')) h.hidden = !any;
       });
-    });
+      if (f === 'all') { pieces.hidden = true; pieces.innerHTML = ''; }
+      else {
+        var t = CC.topics.filter(function (x) { return x.key === f; })[0];
+        var groups = {}, order = [];
+        CC.products.filter(function (p) { return p.topic === f; }).forEach(function (p) {
+          if (!groups[p.sub]) { groups[p.sub] = []; order.push(p.sub); }
+          groups[p.sub].push(p);
+        });
+        pieces.innerHTML = '<h2>' + esc(t.label) + '</h2><p class="note">Pieces from the looks below, grouped by type.</p>' +
+          order.map(function (sub) { return '<h3 class="sub">' + esc(sub) + '</h3><div class="prods">' + groups[sub].map(row).join('') + '</div>'; }).join('');
+        pieces.hidden = false;
+      }
+      if (push) history.replaceState(null, '', f === 'all' ? location.pathname : '#' + f);
+    }
+    all('.chip', tf).forEach(function (chip) { chip.addEventListener('click', function () { apply(chip.getAttribute('data-filter'), true); }); });
+    var hf = location.hash.replace('#', '');
+    if (CC.topics.some(function (x) { return x.key === hf; })) apply(hf, false);
   }
 
   /* style quiz: pick a color combo, then real pieces */
@@ -692,7 +739,7 @@ def build():
 
     # ---------- assets ----------
     write("assets/style.css", CSS.strip() + "\n")
-    write("assets/site.js", JS.replace("__HEART__", HEART.replace("'", "\\'")).strip() + "\n")
+    write("assets/site.js", JS.replace("__HEART__", HEART.replace("'", "\\'")).replace("__HANGER__", HANGER.replace("'", "\\'")).strip() + "\n")
     data = {
         "config": {"domain": CFG["amazon_domain"], "tag": CFG["amazon_tag"]},
         "sizes": [{"key": k, "label": l, "prefix": p} for k, l, p in SIZES],
@@ -700,6 +747,8 @@ def build():
         "styleOrder": STYLE_ORDER,
         "palettes": [{"id": i, "label": l, "a": a, "b": b, "sa": sa, "sb": sb, "style": st} for i, l, a, b, sa, sb, st in PALETTES],
         "steps": [{"id": i, "title": t, "opts": [{"t": ot, "q": oq, "s": os_, "fix": f} for ot, oq, os_, f in opts]} for i, t, opts in QUIZ_STEPS],
+        "topics": [{"key": k, "label": l} for k, l in TOPICS],
+        "products": PRODUCTS,
         "outfits": [{"slug": o["slug"], "title": o["title"], "intro": o["intro"], "pin": o["pin"], "style": o["style"], "shop": o["shop"],
                      "colors": o["colors"], "w": img_dims(o["pin"])[0], "h": img_dims(o["pin"])[1]} for o in OUTFITS],
     }
@@ -786,9 +835,10 @@ def build():
 
     # ---------- shop ----------
     r = "../"
-    chips = ('<button class="chip" type="button" data-filter="all" aria-pressed="true">All colors</button>' + "".join(
-        f'<button class="chip" type="button" data-filter="{k}" aria-pressed="false"><i class="sw" style="background:{sw}"></i>{esc(n)}</button>'
-        for (k, n), sw in zip(COLORS, ["#6B4A35", "#F1E8DA", "#9A9A9A", "#5B7BA3"])))
+    counts = {k: sum(1 for o in OUTFITS if k in o["topics"]) for k, _ in TOPICS}
+    chips = ('<button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>' + "".join(
+        f'<button class="chip" type="button" data-filter="{k}" aria-pressed="false">{esc(l)} <small>{counts[k]}</small></button>'
+        for k, l in TOPICS if counts[k]))
     shop = f"""
   <nav class="crumbs" aria-label="Breadcrumb"><a href="{r}index.html">Home</a> / Shop outfits</nav>
   <section class="pagehead">
@@ -797,7 +847,8 @@ def build():
   </section>
   <section class="sec" style="margin-top:28px"><div class="cats">{"".join(cat_tile(c, r) for c in CATEGORIES)}</div></section>
   <section class="sec">
-    <div class="chips" id="colorfilter" role="group" aria-label="Filter by color">{chips}</div>
+    <div class="chips" id="topicfilter" role="group" aria-label="Filter by type">{chips}</div>
+    <div class="pieces" id="pieces" hidden></div>
     {LEGEND}
     <div class="sec-head" style="margin-top:22px"><h2>Shop these looks</h2><p>The exact piece in the photo links straight to the item.</p></div>
     <div class="grid fgrid">{"".join(card(o, r) for o in SHOPPABLE)}</div>

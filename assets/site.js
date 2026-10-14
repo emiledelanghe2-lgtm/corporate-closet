@@ -78,17 +78,45 @@
     applySize(cur);
   }
 
-  /* shop page color filter */
-  var cf = document.getElementById('colorfilter');
-  if (cf) {
-    var cards = all('.fgrid .card');
-    all('.chip', cf).forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        var f = chip.getAttribute('data-filter');
-        all('.chip', cf).forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
-        cards.forEach(function (c) { c.hidden = f !== 'all' && c.getAttribute('data-colors').split(' ').indexOf(f) < 0; });
+  /* shop page: filter by type, with the pieces grouped by subtype */
+  var tf = document.getElementById('topicfilter');
+  if (tf) {
+    var cards = all('.fgrid .card'), pieces = document.getElementById('pieces');
+    var HANGER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a2 2 0 1 1 2 2c-1 .3-2 .9-2 2v1m0 0L3.5 17.2c-.8.6-.4 1.8.6 1.8h15.8c1 0 1.4-1.2.6-1.8L12 12z"/></svg>';
+    function row(p) {
+      var exact = !!p.url;
+      return '<div class="prod' + (exact ? ' exact' : '') + '"><div class="thumb">' + HANGER + '</div><div class="pi">' +
+        (exact ? '<span class="badge">Exact item from the pin</span>' : '') + '<b>' + esc(p.name) + '</b>' +
+        '<span class="from">From <a href="' + root + 'outfits/' + p.slug + '/index.html">' + esc(p.title) + '</a></span></div>' +
+        '<a class="btn ' + (exact ? 'solid' : 'ghost') + ' small buy" target="_blank" rel="sponsored nofollow noopener" href="' +
+        (exact ? p.url : amazon(p.q, '')) + '">' + (exact ? 'Shop this item' : 'Find similar') + '</a></div>';
+    }
+    function apply(f, push) {
+      all('.chip', tf).forEach(function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-filter') === f)); });
+      cards.forEach(function (c) { c.hidden = f !== 'all' && c.getAttribute('data-topics').split(' ').indexOf(f) < 0; });
+      all('.fgrid').forEach(function (g) {
+        var any = all('.card', g).some(function (c) { return !c.hidden; });
+        g.hidden = !any;
+        var h = g.previousElementSibling;
+        if (h && h.classList.contains('sec-head')) h.hidden = !any;
       });
-    });
+      if (f === 'all') { pieces.hidden = true; pieces.innerHTML = ''; }
+      else {
+        var t = CC.topics.filter(function (x) { return x.key === f; })[0];
+        var groups = {}, order = [];
+        CC.products.filter(function (p) { return p.topic === f; }).forEach(function (p) {
+          if (!groups[p.sub]) { groups[p.sub] = []; order.push(p.sub); }
+          groups[p.sub].push(p);
+        });
+        pieces.innerHTML = '<h2>' + esc(t.label) + '</h2><p class="note">Pieces from the looks below, grouped by type.</p>' +
+          order.map(function (sub) { return '<h3 class="sub">' + esc(sub) + '</h3><div class="prods">' + groups[sub].map(row).join('') + '</div>'; }).join('');
+        pieces.hidden = false;
+      }
+      if (push) history.replaceState(null, '', f === 'all' ? location.pathname : '#' + f);
+    }
+    all('.chip', tf).forEach(function (chip) { chip.addEventListener('click', function () { apply(chip.getAttribute('data-filter'), true); }); });
+    var hf = location.hash.replace('#', '');
+    if (CC.topics.some(function (x) { return x.key === hf; })) apply(hf, false);
   }
 
   /* style quiz: pick a color combo, then real pieces */

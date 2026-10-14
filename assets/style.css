@@ -61,6 +61,7 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .card[hidden]{display:none}
+[hidden]{display:none!important}
 .card .cl{display:block}
 .ph{position:relative}
 .card img{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--sand)}
@@ -207,6 +208,14 @@ h2{font-weight:500;font-style:italic;font-size:34px}
 .rp.head{background:transparent;border:0;padding-left:4px}
 .result .disc{text-align:center}
 .result .rt{font-size:30px;margin:30px 0 -6px;font-weight:500;font-style:italic}
+.chip small{opacity:.7;font-size:12px}
+.pieces{margin-top:6px;padding:20px 18px 24px;background:var(--sand);border-radius:22px}
+.pieces h2{font-size:32px}
+.pieces .note{margin:4px 0 0}
+.pieces .prod{background:var(--card)}
+.sub{font-family:var(--serif);font-size:24px;font-weight:600;margin:22px 0 10px}
+.from{font-size:13px;color:var(--mocha)}
+.from a{text-decoration:underline;text-underline-offset:3px}
 .sum{padding:22px;border-radius:22px;background:var(--espresso);color:var(--cream)}
 .sum .n{font-family:var(--serif);font-size:56px;line-height:1;font-weight:600}
 .sum p{margin-top:6px;color:#D9CEC2}

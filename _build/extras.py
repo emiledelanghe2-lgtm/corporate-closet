@@ -129,3 +129,68 @@ CHECKLIST = [
     "A midi skirt", "A fine-gauge knit sweater", "A turtleneck or mock neck", "A work dress",
     "A neutral trench or coat", "Dark wash jeans for casual days", "Loafers or flats", "A structured bag",
 ]
+
+
+# Shop-by-type topics (the order shown on the shop page)
+TOPICS = [
+    ("trousers", "Trousers"),
+    ("tops", "Blouses & shirts"),
+    ("dresses", "Dresses & skirts"),
+    ("knits", "Knitwear & sweaters"),
+    ("accessories", "Jewelry & accessories"),
+    ("coats", "Coats & outerwear"),
+    ("blazers", "Blazers"),
+    ("shoes", "Shoes"),
+]
+
+
+def classify(name):
+    """Map a product name to (topic, subtype)."""
+    n = name.lower()
+    if "blazer" in n:
+        return "blazers", ("Leather-look blazers" if "leather" in n else "Classic blazers")
+    if "jacket" in n:
+        return "coats", "Jackets"
+    if "coat" in n or "trench" in n:
+        return "coats", "Coats & trenches"
+    if "loafer" in n:
+        return "shoes", "Loafers"
+    if "boot" in n:
+        return "shoes", "Boots"
+    if "flat" in n or "sandal" in n:
+        return "shoes", "Flats & sandals"
+    if "belt" in n:
+        return "accessories", "Belts"
+    if "scarf" in n:
+        return "accessories", "Scarves"
+    if "bag" in n or "tote" in n:
+        return "accessories", "Bags"
+    if "bangle" in n or "bracelet" in n or "necklace" in n or "earring" in n:
+        return "accessories", "Jewelry"
+    if "skirt" in n:
+        return "dresses", "Skirts"
+    if "dress" in n:
+        return "dresses", "Dresses"
+    if "jeans" in n:
+        return "trousers", "Jeans"
+    if "trouser" in n or "pants" in n or "shorts" in n:
+        if "wide" in n:
+            return "trousers", "Wide-leg trousers"
+        if "tailored" in n or "pleated" in n:
+            return "trousers", "Tailored trousers"
+        return "trousers", "Other trousers"
+    if "cardigan" in n:
+        return "knits", "Cardigans"
+    if "turtleneck" in n:
+        return "knits", "Turtlenecks"
+    if "knit" in n and "top" in n:
+        return "knits", "Knit tops"
+    if "sweater" in n or "knit" in n:
+        return "knits", "Sweaters"
+    if "bodysuit" in n:
+        return "tops", "Bodysuits"
+    if "blouse" in n:
+        return "tops", "Blouses"
+    if "shirt" in n or "button down" in n:
+        return "tops", "Shirts"
+    return "tops", "Tops"
